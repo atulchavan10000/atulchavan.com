@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import FeaturedProjects from '../components/FeaturedProjects.astro';
+import CurrentFocus from '../components/CurrentFocus.astro';
+import JournalPreview from '../components/JournalPreview.astro';
+---
+
+<BaseLayout title="Atul Chavan — Software Engineer">
+  <Hero />
+  <section class="container intro" aria-labelledby="intro-title">
+    <p class="eyebrow" id="intro-title"><span class="section-number">01 /</span> Engineering with intent</p>
+    <div>
+      <h2>Beyond test scripts.<br />Towards better systems.</h2>
+      <p>I'm Atul Chavan, a Software Engineer with a background in automation architecture. I build platforms and tools that make software more reliable, from Java testing frameworks to AI-assisted engineering workflows.</p>
+      <a class="text-link" href="/about">A little more about me <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+  <FeaturedProjects />
+  <CurrentFocus />
+  <JournalPreview />
+</BaseLayout>

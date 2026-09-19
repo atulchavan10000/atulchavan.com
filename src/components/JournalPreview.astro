@@ -1,0 +1,9 @@
+---
+import SectionTitle from './SectionTitle.astro';
+import { journal } from '../data/site';
+---
+<section class="container section journal-section" aria-label="Engineering journal preview">
+  <SectionTitle number="04" label="Engineering journal" title="Notes from the workbench." href="/journal" linkText="Visit the journal" />
+  <p class="section-description">Architecture, trade-offs, and lessons from building real things.</p>
+  <div class="journal-list">{journal.slice(0, 3).map(entry => <article class="journal-row"><span class="journal-category">{entry.category}</span><h3>{entry.title}</h3><span class="planned-label">Planned essay</span></article>)}</div>
+</section>

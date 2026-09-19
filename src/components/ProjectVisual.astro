@@ -1,0 +1,11 @@
+---
+import type { Project } from '../data/site';
+interface Props { kind: Project['visual']; }
+const { kind } = Astro.props;
+---
+<div class:list={['project-visual', `visual-${kind}`]} aria-hidden="true">
+  {kind === 'framework' ? <div class="code-preview"><div><span class="code-muted">interface</span> <span class="code-accent">ReliableSystem</span> {'{'}</div><div>&nbsp;&nbsp;design<span class="code-muted">();</span></div><div>&nbsp;&nbsp;automate<span class="code-muted">();</span></div><div>&nbsp;&nbsp;improve<span class="code-muted">();</span></div><div>{'}'}</div></div>
+    : kind === 'pipeline' ? <div class="pipeline-graphic"><div class="pipeline-start">BUILD</div><div class="pipeline-branches"><span>SHARD 01 <b>✓</b></span><span>SHARD 02 <b>✓</b></span><span>SHARD 03 <b>✓</b></span></div><div class="pipeline-end">↗</div></div>
+    : kind === 'triage' ? <div class="triage-graphic"><span>FAILURES</span><i>→</i><span>CONTEXT</span><i>→</i><strong>INSIGHT</strong></div>
+    : <div class="server-graphic"><div class="server-unit"><i></i><i></i><span>{kind === 'nas' ? 'HOME NAS' : 'PRIVATE CLOUD'}</span><b>●</b></div><div class="server-unit"><i></i><i></i><span>{kind === 'nas' ? 'FAMILY STORAGE' : 'PHOTO ARCHIVE'}</span><b>●</b></div><div class="server-base">{kind === 'nas' ? 'RASPBERRY PI / SAMBA' : 'DEBIAN / DOCKER / IMMICH'}</div></div>}
+</div>

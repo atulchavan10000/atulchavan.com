@@ -1,0 +1,9 @@
+---
+import SectionTitle from './SectionTitle.astro';
+import ProjectCard from './ProjectCard.astro';
+import { projects } from '../data/site';
+---
+<section class="container section" aria-label="Featured engineering projects">
+  <SectionTitle number="02" label="Selected work" title="Engineering in practice." href="/projects" linkText="All projects" />
+  <div class="project-grid">{projects.slice(0, 3).map(project => <ProjectCard project={project} />)}</div>
+</section>

@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { contacts } from '../data/site';
+---
+<BaseLayout title="Contact — Atul Chavan" description="Connect with Atul Chavan about automation architecture, AI-assisted engineering, and software engineering opportunities.">
+  <div class="container page-content">
+    <header class="page-heading"><p class="eyebrow">Contact / Start a conversation</p><h1>Good engineering<br /><span>is a team effort.</span></h1><p>Interested in automation architecture, AI-assisted engineering, or building reliable software? I'd love to connect.</p></header>
+    <div class="contact-grid">{contacts.map(contact => <article class="contact-card"><h2>{contact.href ? <a href={contact.href}>{contact.label} <span aria-hidden="true">↗</span></a> : contact.label}</h2><p>{contact.detail}</p>{!contact.href && <span class="planned-label">{contact.label === 'Resume' ? 'Resume coming soon' : 'Contact details coming soon'}</span>}</article>)}</div>
+    <p class="page-note">This site is taking shape. Verified contact links and a resume will be added here soon.</p>
+  </div>
+</BaseLayout>

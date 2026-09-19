@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { journal } from '../data/site';
+---
+<BaseLayout title="Engineering Journal — Atul Chavan" description="Planned long-form engineering notes on automation architecture, AI in testing, system design, and self-hosting.">
+  <div class="container page-content">
+    <header class="page-heading"><p class="eyebrow">Engineering journal / Notes from the workbench</p><h1>The work.<br /><span>And the thinking behind it.</span></h1><p>Long-form engineering notes, architecture writeups, trade-offs, and lessons learned from real projects.</p></header>
+    <div class="journal-notice"><span class="status-dot" aria-hidden="true"></span><p>The first essays are on the workbench. These are planned topics; no articles have been published yet.</p></div>
+    <div class="journal-entries">{journal.map((entry, index) => <article class="journal-entry"><span class="focus-index">0{index + 1}</span><div><p class="eyebrow">{entry.category}</p><h2>{entry.title}</h2><p>{entry.description}</p></div><span class="planned-label">Planned essay</span></article>)}</div>
+  </div>
+</BaseLayout>

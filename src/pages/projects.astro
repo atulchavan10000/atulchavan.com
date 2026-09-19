@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { projects } from '../data/site';
+---
+<BaseLayout title="Engineering Projects — Atul Chavan" description="Automation frameworks, AI-assisted developer tools, and self-hosted infrastructure by Atul Chavan.">
+  <div class="container page-content">
+    <header class="page-heading"><p class="eyebrow">Projects / Engineering in practice</p><h1>Built to solve<br /><span>real problems.</span></h1><p>Automation platforms, developer tools, and infrastructure. A selection of the systems I've built and the ideas I'm working through.</p></header>
+    <div class="project-grid project-grid-all">{projects.map(project => <ProjectCard project={project} linked={false} />)}</div>
+    <p class="page-note">Project overviews for now. Detailed architecture writeups and implementation notes will follow in the <a href="/journal">engineering journal ↗</a>.</p>
+  </div>
+</BaseLayout>

@@ -1,0 +1,12 @@
+---
+const focus = [
+  ['AI-assisted testing', 'Building useful AI into testing and engineering workflows.'],
+  ['Automation at scale', 'Designing maintainable frameworks and faster feedback loops.'],
+  ['Systems & infrastructure', 'Deepening system design and cloud-native engineering through hands-on work.'],
+  ['Learning in the open', 'Documenting home lab projects, self-hosting, and the decisions behind them.'],
+];
+---
+<section class="container section focus-section" aria-labelledby="focus-title">
+  <div class="focus-intro"><p class="eyebrow"><span class="section-number">03 /</span> Currently exploring</p><h2 id="focus-title">Always building.<br />Always learning.</h2><p>The questions and systems<br />I'm spending time on right now.</p><span class="focus-note"><span class="status-dot" aria-hidden="true"></span> A work in progress, by design</span></div>
+  <ol class="focus-list">{focus.map(([title, description], index) => <li><span class="focus-index">0{index + 1}</span><div><h3>{title}</h3><p>{description}</p></div><span class="focus-plus" aria-hidden="true">+</span></li>)}</ol>
+</section>
