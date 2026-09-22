@@ -1,6 +1,6 @@
 # atulchavan.com
 
-Atul Chavan's personal engineering website. Built with Astro, TypeScript data, and plain CSS. All five pages are statically generated; production pages ship no client-side JavaScript or external font requests.
+Atul Chavan's personal engineering website. Built with Astro, TypeScript data, and plain CSS. All pages are statically generated; production pages ship no client-side JavaScript or external font requests.
 
 ## Local development
 
@@ -35,7 +35,9 @@ On Windows, if npm is missing from PATH, open a terminal with Node.js installed 
 
 ## Editing content
 
-Edit project summaries, tags, and planned essays in `src/data/site.ts`. The first three projects and essays appear on the homepage. Project cards link to the corresponding overview on `/projects`.
+Edit project summaries, tags, and planned essays in `src/data/site.ts`. The first three projects and essays appear on the homepage. A project's optional `href` links its card to a full case study; other homepage cards link to the corresponding overview on `/projects`.
+
+The Immich case study lives in `src/pages/projects/photos-to-immich.astro`, with three responsive diagrams in `src/components/ImmichDiagram.astro`. It covers the family photo cloud, migration, the 60% battery charge limit, and off-site recovery. Its Glacier section is written under the owner's requested assumption that Glacier is already in place; this edit did not deploy or verify a Glacier backup. Recovery testing is not claimed as completed.
 
 Contact values intentionally start as `null`. Replace them with verified GitHub and LinkedIn URLs, `mailto:your-address`, and a resume URL (for example `/resume.pdf`, after adding that file under `public/`). The contact page automatically renders configured values as links. Unconfigured entries remain clearly labeled placeholders.
 

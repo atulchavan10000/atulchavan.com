@@ -6,6 +6,7 @@ export const contacts: { label: string; detail: string; href: string | null }[] 
   { label: 'Resume', detail: 'Experience and engineering background', href: null },
 ];
 export interface Project {
+  href?: string;
   slug: string; number: string; title: string; category: string; description: string; tags: string[];
   visual: 'framework' | 'pipeline' | 'server' | 'nas' | 'triage';
 }
@@ -17,7 +18,8 @@ export const projects: Project[] = [
     description: 'Built a Jenkins fan-out execution model to shard hundreds of tests and reduce regression execution time by around 90%.',
     tags: ['Jenkins', 'Groovy', 'CI/CD', 'Test Automation'], visual: 'pipeline' },
   { slug: 'photos-to-immich', number: '03', title: 'Google Photos → Immich', category: 'Self-hosted infrastructure',
-    description: 'Self-hosted Immich on a Debian server as a private family photo backup platform, replacing reliance on Google Photos.',
+    href: '/projects/photos-to-immich',
+    description: 'Repurposed an ASUS laptop into a private photo cloud for four family members, using Immich, Debian, Docker, and Tailscale.',
     tags: ['Docker', 'Debian', 'Immich', 'Self Hosting', 'Tailscale'], visual: 'server' },
   { slug: 'raspberry-pi-nas', number: '04', title: 'Raspberry Pi Home NAS', category: 'Home lab',
     description: 'Built a Raspberry Pi based photo backup NAS with external storage, Samba shares, and family member isolation.',
@@ -27,7 +29,7 @@ export const projects: Project[] = [
     tags: ['AI', 'Jenkins', 'Automation', 'Developer Tools'], visual: 'triage' },
 ];
 export const journal = [
-  { category: 'Self hosting', title: 'Replacing Google Photos with Immich', description: 'Private photo storage, practical infrastructure, and the trade-offs of running it yourself.' },
+  { category: 'Self hosting', title: 'Diagnosing I/O Bottlenecks During an Immich Migration', description: 'What simultaneous imports and storage wait taught me about diagnosing a busy server.' },
   { category: 'Architecture', title: 'Building a Java API Automation Framework', description: 'Thinking through client abstractions, test data, and a framework that can grow.' },
   { category: 'CI/CD', title: 'Reducing Regression Time with Jenkins Fan-out', description: 'Notes on parallel execution, test sharding, and making feedback loops shorter.' },
   { category: 'AI in testing', title: 'AI in Testing: Practical Use Cases', description: 'Exploring where AI can support testing and where engineering judgment still matters.' },

@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ImmichDiagram from '../../components/ImmichDiagram.astro';
+const contents = [
+  ['why', 'Why I built it'], ['architecture', 'The architecture'], ['migration', 'Moving the library'],
+  ['operations', 'Running a laptop as a server'], ['backup', 'Off-site cold storage'], ['outcome', 'Where it stands'],
+];
+---
+<BaseLayout title="Replacing Google Photos with Immich — Atul Chavan" description="How I repurposed an ASUS laptop into a private Immich photo cloud for four family members, with Docker, Tailscale, a 60% battery charge limit, and Glacier cold storage.">
+  <article class="container case-study">
+    <header class="case-header">
+      <a class="text-link" href="/projects">← All projects</a>
+      <p class="eyebrow">Project case study / Self-hosted infrastructure</p>
+      <h1>Replacing Google Photos<br /><span>with a private family photo cloud.</span></h1>
+      <p class="lead">An old ASUS laptop, a photo library worth keeping, and a practical reason to learn infrastructure. Today, four of us host our photos on the same Immich server.</p>
+      <p class="byline">Atul Chavan <span aria-hidden="true">·</span> <time datetime="2026-09-22">September 22, 2026</time></p>
+      <dl class="facts"><div><dt>People using it</dt><dd>4 family members</dd></div><div><dt>Photo storage</dt><dd>1 TB HDD</dd></div><div><dt>Battery charge limit</dt><dd>60%</dd></div><div><dt>Off-site backup</dt><dd>AWS Glacier</dd></div></dl>
+    </header>
+    <div class="case-layout">
+      <aside><nav class="contents" aria-label="On this page"><p class="eyebrow">In this case study</p>{contents.map(([id, title]) => <a href={`#${id}`}>{title}</a>)}</nav></aside>
+      <div class="case-body">
+        <section id="why">
+          <h2>01 / A useful reason to build a server</h2>
+          <p>I wanted a private alternative to Google Photos for my family: somewhere to upload, browse, and keep our photos on hardware I control. That gave this project a concrete purpose beyond experimenting with another home lab service.</p>
+          <p>I already had an ASUS VivoBook. Rather than buying a dedicated server, I repurposed it to run Debian and Docker, with Immich providing the photo application. Four members of my family, including me, now host their photos there.</p>
+          <p>My contribution was the system around Immich: preparing the machine, arranging persistent storage, migrating existing media, configuring remote access, troubleshooting imports, and adapting the laptop for continuous use. Immich itself is the open-source application that makes the photo experience possible.</p>
+        </section>
+        <section id="architecture">
+          <h2>02 / The system as it exists today</h2>
+          <p>The ASUS has an Intel i3-7020U and 12 GB of RAM. An SSD supports the operating system and Docker, while a 1 TB HDD holds the photo library. Debian provides the host environment; the application runs as Docker services.</p>
+          <ImmichDiagram kind="system" />
+          <p>The stack includes the Immich server, PostgreSQL, the machine-learning service, and a Redis-compatible service running Valkey. These have different responsibilities: the media files live on disk, while the database preserves the information that makes those files a usable library.</p>
+          <p>Tailscale provides the remote access path. I verified access from outside the home using the server’s Tailscale IP and Immich’s port. The HTTPS hostname I tried did not work at that stage, so I am not presenting it as a completed part of the setup.</p>
+          <p>An earlier Raspberry Pi project used Samba and PhotoSync for photo storage. This case study covers the later ASUS-based Immich system; the Pi is not a dependency in the architecture shown here.</p>
+        </section>
+        <section id="migration">
+          <h2>03 / The migration was the real work</h2>
+          <p>Getting the application running was only one part of the project. My existing media was spread across folders and ZIP archives, with duplicate files and large videos to work through. A temporary transfer SSD acted as the import source, separate from permanent storage.</p>
+          <ImmichDiagram kind="migration" />
+          <h3>A file on the host is not automatically visible in a container</h3>
+          <p>At one point, the extracted files were visible on Debian but missing inside Immich’s container. Inspecting the mounts showed the intended mapping, yet the running container had been started before the transfer SSD was mounted. The issue was the container’s view of storage, rather than the extraction itself.</p>
+          <p>The configuration separated the writable Immich data directory from read-only import sources. That made the boundary explicit: existing media was input; the managed library was the destination.</p>
+          <h3>A busy machine is not always short of CPU</h3>
+          <p>During migration, the server appeared heavily loaded. A closer look at <code>top</code> showed <strong>72.9% I/O wait</strong> in one sample, and the process list revealed five simultaneous Immich import or scan processes. Several were reading the same source.</p>
+          <p>That evidence changed the diagnosis. High apparent activity did not, by itself, justify a processor upgrade. Storage contention and overlapping work were part of the problem. The response was to stop the overlapping imports and use a controlled sequence, rather than launching more retries alongside them.</p>
+          <p>I also checked a repeated video using SHA-256 hashes. The matching hashes confirmed that those two copies were identical. That is a useful distinction: matching filenames alone do not prove that files contain the same data.</p>
+        </section>
+        <section id="operations">
+          <h2>04 / Making a laptop work as a server</h2>
+          <p>A repurposed laptop brings operational questions with it. Photo imports can create bursts of processing, while everyday use is a different workload. Storage, background jobs, heat, and power all deserve attention alongside CPU and memory.</p>
+          <div class="callout"><p class="eyebrow">Implemented / Battery care</p><h3>A 60% charge ceiling</h3><p>I configured the server to charge only to 60% and remain around that level while plugged in. The intent is to avoid keeping the battery continuously at full charge while the laptop serves as an always-connected machine.</p><p>This is a charging-policy change, not a measured battery-lifespan result. I have not quantified the improvement, and the charging limit does not replace attention to temperature or the condition of the hardware.</p></div>
+          <p>The goal is a machine I can keep using and maintaining, with operational choices that fit its new role. Owning the server also means owning its updates, capacity, availability, and recovery plan.</p>
+        </section>
+        <section id="backup">
+          <h2>05 / Glacier for off-site recovery</h2>
+          <p class="status-note">Local storage for everyday use. Off-site cold storage for recovery.</p>
+          <p>The HDD provides the working photo library. AWS Glacier adds an off-site cold-storage layer, so the home server is not the only place the photo archive lives. Immich remains the everyday application; the remote archive serves a different purpose: recovery if the local copy is lost.</p>
+          <ImmichDiagram kind="backup" />
+          <p>A recoverable Immich backup needs both media and a database backup, with deployment configuration and version information to support restoration. Immich’s documentation explains why a database backup alone does not contain the photos and videos. <a href="https://docs.immich.app/administration/backup-and-restore/">Immich backup and restore guidance ↗</a></p>
+          <p>The architecture separates the live library from the cold archive. The Glacier tier does not sit in the upload path, and everyday browsing does not depend on retrieving archived objects. Backup retention, access control, and recovery procedures remain part of operating the system.</p>
+          <p>Cold storage is for recovery, not the live Immich media directory. Glacier storage classes have different retrieval characteristics; Flexible Retrieval and Deep Archive require a restore before archived objects can be accessed. That makes retrieval time and cost part of the recovery design, rather than something to discover during an outage. <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html">AWS storage-class documentation ↗</a></p>
+          <p>The recovery path is to retrieve the backup, rebuild the application, and verify that the expected photos, videos, and library information are usable. I am not claiming a measured recovery time or a completed restore drill here: having an off-site archive and proving restoration are separate milestones.</p>
+        </section>
+        <section id="outcome">
+          <h2>06 / What this project delivers</h2>
+          <p>This project now serves four family members on hardware I already owned. It combines a useful photo application with hands-on work in Linux, containers, persistent storage, private networking, and troubleshooting.</p>
+          <p>The most valuable lesson was to inspect the whole system. A missing file can be a mount problem. High load can involve I/O wait. A laptop that becomes a server needs a different charging policy. Each of those details matters to the people relying on the result.</p>
+          <p>The result is a private photo cloud for four people, with a local library for regular use and Glacier as the off-site archive. The next operational milestone is to document and rehearse recovery, so confidence in the backup comes from a repeatable process.</p>
+          <a class="text-link" href="/projects">← Explore the other projects</a>
+        </section>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+<style>
+  .case-study { padding-block: 50px 80px; border-bottom: 1px solid var(--border); }
+  .case-header > .eyebrow { margin-top: 32px; }
+  h1 { max-width: 1000px; font-size: clamp(2.2rem, 4.6vw, 3.9rem); margin-block: 24px; }
+  h1 span { color: #9ca6af; }
+  .lead { max-width: 770px; font-size: 19px; line-height: 1.8; }
+  .byline { display: flex; flex-wrap: wrap; gap: 12px; font: 11px/1.8 var(--mono); margin-top: 24px; }
+  .facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; border-block: 1px solid var(--border); padding-block: 26px; margin-top: 38px; }
+  dt { color: var(--muted); font: 10px/1.6 var(--mono); margin-bottom: 7px; }
+  dd { font-size: 18px; }
+  .case-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 65px; margin-top: 54px; }
+  .contents { display: flex; flex-direction: column; align-items: start; gap: 8px; position: sticky; top: 25px; }
+  .contents p { margin-bottom: 12px; }
+  .contents a { padding: 5px 0; font-size: 12px; line-height: 1.6; }
+  .contents a:last-child { border: 0; padding: 5px 0; }
+  .case-body { min-width: 0; max-width: 840px; }
+  section { margin-bottom: 52px; scroll-margin-top: 30px; }
+  section:last-child { margin-bottom: 0; }
+  h2 { font-size: 27px; margin-bottom: 22px; }
+  h3 { font-size: 21px; margin-block: 30px 15px; }
+  section > p, .callout > p:not(.eyebrow) { font-size: 16px; line-height: 1.9; margin-block: 18px; }
+  section p a { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+  strong { color: var(--text); font-weight: 550; }
+  code { font-family: var(--mono); font-size: .9em; color: #c7dbe2; }
+  .callout { margin-block: 28px; padding: 26px; border-left: 2px solid var(--accent); background: var(--surface); border-radius: 0 6px 6px 0; }
+  .callout h3 { margin-top: 16px; }
+  .callout > p:last-child { margin-bottom: 0; }
+  .status-note { color: var(--accent); font-weight: 550; }
+  @media (max-width: 950px) { .case-layout { grid-template-columns: 1fr; gap: 35px; } .contents { position: static; flex-direction: row; flex-wrap: wrap; gap: 8px 20px; } .contents p { flex-basis: 100%; } .case-body { max-width: none; } }
+  @media (max-width: 560px) { .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 15px; } dd { font-size: 16px; } .lead { font-size: 17px; } .case-header > .eyebrow { font-size: 9px; } h2 { font-size: 24px; } .callout { padding: 20px; } .case-study { padding-top: 30px; } }
+</style>

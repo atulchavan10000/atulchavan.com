@@ -8,8 +8,9 @@ const { project, linked = true } = Astro.props;
   <ProjectVisual kind={project.visual} />
   <div class="project-body">
     <p class="project-category">{project.category}<span>{project.number}</span></p>
-    <h3>{linked ? <a href={`/projects#${project.slug}`}>{project.title}<span aria-hidden="true">↗</span></a> : project.title}</h3>
+    <h3>{linked || project.href ? <a href={project.href ?? `/projects#${project.slug}`}>{project.title}<span aria-hidden="true">↗</span></a> : project.title}</h3>
     <p class="project-description">{project.description}</p>
+    {project.href && <a class="text-link" href={project.href}>Read the case study <span aria-hidden="true">→</span></a>}
     <ul class="tags" aria-label="Technologies">{project.tags.map(tag => <li>{tag}</li>)}</ul>
   </div>
 </article>

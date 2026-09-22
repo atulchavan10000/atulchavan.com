@@ -1,0 +1,68 @@
+---
+interface Props { kind: 'system' | 'migration' | 'backup'; }
+const { kind } = Astro.props;
+---
+<figure class="architecture">
+  {kind === 'system' ? <>
+    <div class="diagram-label">01 / Current architecture <span>In use</span></div>
+    <div class="node"><strong>Four family members</strong><small>My phone + three family members’ phones</small></div>
+    <div class="connector">↓ <span>Photo uploads &amp; library access</span></div>
+    <div class="pair"><div class="node"><strong>Home network</strong><small>Local access</small></div><div class="node"><strong>Tailscale</strong><small>Private access away from home</small></div></div>
+    <div class="connector" aria-hidden="true">↓</div>
+    <div class="server-boundary">
+      <p class="boundary-title">ASUS VivoBook · Debian · Docker</p>
+      <div class="node primary"><strong>Immich server</strong><small>Photo library, uploads &amp; background work</small></div>
+      <div class="connector">↕ <span>Supporting services</span></div>
+      <div class="services"><div class="node"><strong>PostgreSQL</strong><small>Library metadata</small></div><div class="node"><strong>Valkey</strong><small>Redis-compatible service</small></div><div class="node"><strong>Immich ML</strong><small>Machine learning</small></div></div>
+    </div>
+    <div class="connector">↓ <span>Immich-managed media</span></div>
+    <div class="node primary"><strong>1 TB photo HDD</strong><small>Persistent media storage</small></div>
+    <figcaption>Phones reach the ASUS server locally or through Tailscale. The database and media are separate parts of the system; both matter for recovery.</figcaption>
+  </> : kind === 'migration' ? <>
+    <div class="diagram-label">02 / Migration workflow</div>
+    <ol class="flow">
+      <li><strong>Existing media</strong><small>Folders &amp; ZIP archives on a temporary SSD</small></li>
+      <li><strong>Prepare &amp; inspect</strong><small>Extract archives, inspect duplicates, check mounts</small></li>
+      <li><strong>Controlled import</strong><small>Immich CLI · dry runs · retries</small></li>
+      <li><strong>Immich library</strong><small>Media on the HDD, indexed by Immich</small></li>
+    </ol>
+    <figcaption>The transfer SSD was an import source, separate from permanent photo storage. Import directories were exposed to the container as read-only mounts.</figcaption>
+  </> : <>
+    <div class="diagram-label">03 / Off-site backup &amp; recovery <span>Glacier archive</span></div>
+    <div class="node"><strong>Running Immich system</strong><small>Photo HDD + PostgreSQL database</small></div>
+    <div class="connector">↓ <span>Create a recoverable backup set</span></div>
+    <div class="pair"><div class="node"><strong>Media files</strong><small>Photos, videos &amp; required library files</small></div><div class="node"><strong>Database &amp; configuration</strong><small>Database dump, deployment details &amp; version record</small></div></div>
+    <div class="connector">↓ <span>Off-site cold-storage copy</span></div>
+    <div class="node future"><strong>Amazon S3 Glacier storage class</strong><small>Cold archive · separate from the live library</small></div>
+    <div class="connector">↓ <span>Retrieve backup &amp; rehearse restoration</span></div>
+    <div class="node"><strong>Recovery rehearsal · next milestone</strong><small>Restore into a separate environment and verify the library</small></div>
+    <figcaption>The local Immich library serves everyday use; Glacier holds the off-site archive. The recovery rehearsal is shown as the next milestone, not a completed test.</figcaption>
+  </>}
+</figure>
+<style>
+  .architecture { margin: 32px 0; padding: 28px; border: 1px solid var(--border); border-radius: 8px; background: #12191d; }
+  .diagram-label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font: 11px/1.6 var(--mono); color: var(--muted); margin-bottom: 24px; }
+  .diagram-label span { color: var(--accent); }
+  .node { padding: 17px 15px; border: 1px solid #3a4b55; border-radius: 5px; text-align: center; background: #172127; }
+  strong { display: block; font-size: 14px; line-height: 1.5; font-weight: 550; }
+  small { display: block; font-size: 12px; line-height: 1.6; color: #afbac2; margin-top: 5px; }
+  .primary { border-color: #659ba8; }
+  .pair, .services { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .services { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .connector { text-align: center; color: var(--accent); padding: 10px 0; font-size: 20px; }
+  .connector span { margin-left: 8px; font: 11px/1.6 var(--mono); color: #afbac2; }
+  .server-boundary { padding: 20px; border: 1px solid #455c68; border-radius: 6px; }
+  .boundary-title { font: 11px/1.6 var(--mono); margin-bottom: 18px; color: #c0cbd2; }
+  figcaption { color: var(--muted); font-size: 12px; line-height: 1.8; margin-top: 22px; }
+  .future { border-style: solid; }
+  .future { border-color: var(--accent); }
+  .flow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 30px; padding-left: 25px; }
+  .flow li { padding: 10px 5px; }
+  .flow li::marker { color: var(--accent); font: 12px var(--mono); }
+  @media (max-width: 600px) {
+    .architecture { padding: 18px 14px; }
+    .pair, .services, .flow { grid-template-columns: 1fr; }
+    .server-boundary { padding: 12px; }
+    .connector span { display: block; margin: 0; }
+  }
+</style>

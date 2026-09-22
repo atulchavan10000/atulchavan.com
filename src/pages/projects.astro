@@ -7,6 +7,6 @@ import { projects } from '../data/site';
   <div class="container page-content">
     <header class="page-heading"><p class="eyebrow">Projects / Engineering in practice</p><h1>Built to solve<br /><span>real problems.</span></h1><p>Automation platforms, developer tools, and infrastructure. A selection of the systems I've built and the ideas I'm working through.</p></header>
     <div class="project-grid project-grid-all">{projects.map(project => <ProjectCard project={project} linked={false} />)}</div>
-    <p class="page-note">Project overviews for now. Detailed architecture writeups and implementation notes will follow in the <a href="/journal">engineering journal ↗</a>.</p>
+    <p class="page-note">Start with the <a href="/projects/photos-to-immich">Immich case study</a> for the complete architecture and lessons learned. More case studies and focused <a href="/journal">engineering notes</a> will follow.</p>
   </div>
 </BaseLayout>

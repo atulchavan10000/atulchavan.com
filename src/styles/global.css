@@ -33,7 +33,7 @@ p { color: var(--muted); }
 .brand-mark > span { color: var(--accent); }
 nav { display: flex; align-items: center; gap: 29px; }
 nav a { font-size: 13px; color: var(--muted); padding-block: 15px; }
-nav a[aria-current='page'] { color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 10px; }
+nav a[aria-current] { color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 10px; }
 nav a:last-child { border: 1px solid #394149; border-radius: 5px; padding: 8px 15px; color: var(--text); }
 .eyebrow { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #adb5bc; }
 .status-dot { display: inline-block; flex: 0 0 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px #80cddd0a; }
