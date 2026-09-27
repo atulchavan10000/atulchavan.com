@@ -1,0 +1,56 @@
+---
+interface Props { kind: 'traffic' | 'deployment'; }
+const { kind } = Astro.props;
+---
+<figure class="hosting-diagram">
+  {kind === 'traffic' ? <>
+    <p class="figure-label">01 / How a visitor reaches the site</p>
+    <div class="node"><strong>Visitor’s browser</strong><small>atulchavan.com</small></div>
+    <div class="connector"><span aria-hidden="true">↓</span><span>HTTPS</span></div>
+    <div class="node accent"><strong>Cloudflare</strong><small>Public HTTPS endpoint · authoritative DNS</small></div>
+    <div class="connector"><span aria-hidden="true">↕</span><span>Cloudflare Tunnel · encrypted connection</span></div>
+    <div class="node"><strong>Tunnel connector · cloudflared</strong><small>Initiates the connection out to Cloudflare</small></div>
+    <div class="connector"><span aria-hidden="true">↓</span><span>Forward website requests to the origin</span></div>
+    <div class="host-boundary">
+      <p class="boundary-label">Origin: ASUS VivoBook · Debian · Docker</p>
+      <div class="node"><strong>Website service</strong><small>Host port 8080 → container port 80 · HTTP</small></div>
+      <div class="connector"><span aria-hidden="true">↓</span><span>Caddy serves files from /srv</span></div>
+      <div class="node accent"><strong>Astro’s generated site</strong><small>HTML · CSS · static assets</small></div>
+    </div>
+    <figcaption>Request path shown top to bottom; responses travel back along the same route. The connector opens the tunnel outbound. Its exact installation method is not shown. GoDaddy manages the domain account; public DNS delegates to Cloudflare.</figcaption>
+  </> : <>
+    <p class="figure-label">02 / How a change becomes a release</p>
+    <ol class="release-flow">
+      <li><strong>Edit locally</strong><small>Astro pages, components &amp; content</small></li>
+      <li><strong>Commit &amp; push</strong><small>Source changes reach GitHub</small></li>
+      <li><strong>Update triggered</strong><small>Automated build and deployment flow</small></li>
+    </ol>
+    <div class="connector"><span aria-hidden="true">↓</span><span>docker compose up -d --build site</span></div>
+    <div class="build-stages">
+      <div class="node"><p class="stage-label">BUILD STAGE</p><strong>Node 24 + Astro</strong><small>npm ci → npm run build → dist/</small></div>
+      <div class="connector"><span aria-hidden="true">↓</span><span>Copy generated files into the runtime image</span></div>
+      <div class="node accent"><p class="stage-label">RUNTIME STAGE</p><strong>Caddy 2</strong><small>Generated site at /srv · Node build tools stay behind</small></div>
+    </div>
+    <div class="connector"><span aria-hidden="true">↓</span><span>Compose recreates the service from the updated image</span></div>
+    <div class="node"><strong>Verify the release</strong><small>Check the local service, then the public page</small></div>
+    <figcaption>New commits pushed to the repository trigger automated updates. The flow builds the site and deploys the updated image; the live page can then be checked.</figcaption>
+  </>}
+</figure>
+<style>
+  .hosting-diagram { margin-block: 32px; padding: 26px; background: #12191d; border: 1px solid var(--border); border-radius: 8px; }
+  .figure-label { color: #abbac3; font: 11px/1.7 var(--mono); margin-bottom: 22px; }
+  .node { padding: 18px; text-align: center; border: 1px solid #3a4b55; border-radius: 5px; background: #172127; }
+  .node strong, .release-flow strong { display: block; color: var(--text); font-size: 15px; font-weight: 550; line-height: 1.5; }
+  small { display: block; color: #afbac2; font-size: 12px; line-height: 1.7; margin-top: 5px; }
+  .accent { border-color: #659ba8; }
+  .connector { display: flex; flex-direction: column; align-items: center; gap: 3px; padding-block: 9px; text-align: center; }
+  .connector span:first-child { color: var(--accent); font-size: 20px; }
+  .connector span:last-child { color: #afbac2; font: 11px/1.8 var(--mono); overflow-wrap: anywhere; }
+  .host-boundary, .build-stages { border: 1px solid #455c68; border-radius: 6px; padding: 18px; }
+  .boundary-label { color: #b9c9d2; font: 11px/1.7 var(--mono); margin-bottom: 18px; }
+  .stage-label { color: var(--accent); font: 10px/1.6 var(--mono); margin-bottom: 8px; }
+  .release-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding-left: 22px; }
+  .release-flow li::marker { font: 12px var(--mono); color: var(--accent); }
+  figcaption { color: var(--muted); margin-top: 22px; font-size: 12px; line-height: 1.8; }
+  @media (max-width: 600px) { .hosting-diagram { padding: 18px 14px; } .release-flow { grid-template-columns: 1fr; gap: 15px; } .host-boundary, .build-stages { padding: 12px; } .node { padding: 16px 12px; } }
+</style>

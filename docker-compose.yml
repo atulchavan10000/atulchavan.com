@@ -1,6 +1,8 @@
 services:
   site:
-    build: .
+    build:
+      context: .
+      dockerfile: dockerfile
     container_name: atulchavan_site
     restart: unless-stopped
     ports:

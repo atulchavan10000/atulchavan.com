@@ -1,0 +1,107 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WebsiteHostingDiagram from '../../components/WebsiteHostingDiagram.astro';
+const contents = [
+  ['why', 'Why host it myself?'], ['architecture', 'The request path'], ['build', 'Build once, serve files'],
+  ['deployment', 'Publishing an update'], ['lessons', 'What the first update taught me'], ['trade-offs', 'Trade-offs & next steps'],
+];
+---
+<BaseLayout title="Hosting My Own Website — Atul Chavan" description="How I host atulchavan.com on an ASUS Debian home server using Astro, Docker, Caddy, and Cloudflare Tunnel, with an automated Git-based deployment workflow.">
+  <article class="container hosting-case">
+    <header class="case-header">
+      <a class="text-link" href="/projects">← All projects</a>
+      <p class="eyebrow">Project case study / Self-hosted infrastructure</p>
+      <h1>Hosting my own website.<br /><span>From Astro to a home server.</span></h1>
+      <p class="lead">The website you’re reading is served from a repurposed ASUS laptop at home. Building it gave me a reason to connect application development, containers, networking, and deployment into one working system.</p>
+      <p class="byline">Atul Chavan <span aria-hidden="true">·</span> <time datetime="2026-09-27">September 27, 2026</time></p>
+      <dl class="facts"><div><dt>Application</dt><dd>Astro · static site</dd></div><div><dt>Origin server</dt><dd>ASUS · Debian</dd></div><div><dt>Public access</dt><dd>Cloudflare Tunnel</dd></div><div><dt>Deployment</dt><dd>Git + Docker Compose</dd></div></dl>
+    </header>
+    <div class="case-layout">
+      <aside><nav class="contents" aria-label="On this page"><p class="eyebrow">In this case study</p>{contents.map(([id, title]) => <a href={`#${id}`}>{title}</a>)}</nav></aside>
+      <div class="case-body">
+        <section id="why">
+          <h2>01 / A portfolio that also teaches me infrastructure</h2>
+          <p>I wanted a place to document my engineering work, but hosting it was an opportunity to learn too. I already had a Debian server running on an old ASUS VivoBook for my <a href="/projects/photos-to-immich">Immich family photo cloud</a>. Hosting my website on the same machine made practical use of hardware I owned.</p>
+          <p>My reasons were a combination of learning, control, reuse, and cost. I wanted to understand the path from a source-code change to a page someone could open on the internet. Running the origin myself also avoids paying for a separate hosting server, although the domain, electricity, internet connection, and maintenance still have costs.</p>
+          <p>The result is a small deployment I can explain end to end: Astro generates the website, Docker packages it, Caddy serves it, and Cloudflare Tunnel connects it to the public domain.</p>
+        </section>
+        <section id="architecture">
+          <h2>02 / From a browser to the laptop at home</h2>
+          <p>A visitor opens <a href="https://atulchavan.com">atulchavan.com</a> over HTTPS. The public endpoint is Cloudflare, which forwards requests through the tunnel to my website’s origin. On the ASUS server, Docker publishes port <code>8080</code> to port <code>80</code> inside the Caddy container.</p>
+          <WebsiteHostingDiagram kind="traffic" />
+          <h3>Domain registration, DNS, and serving the site are separate jobs</h3>
+          <p>I manage the domain through GoDaddy, while its current authoritative nameservers are Cloudflare’s. That distinction matters: the account used to manage a domain does not necessarily identify the service answering its DNS queries. The public DNS and HTTPS endpoint were checked when writing this case study.</p>
+          <h3>HTTPS outside, HTTP at the container</h3>
+          <p>Cloudflare handles the browser-facing HTTPS connection. The tunnel carries traffic to the origin side, where this Caddy configuration listens on HTTP port 80. Caddy is serving static files here; it is not configured to obtain the public domain’s certificate. Cloudflare’s <a href="https://developers.cloudflare.com/ssl/edge-certificates/universal-ssl/">edge-certificate documentation</a> explains the public TLS layer.</p>
+          <p>The tunnel connector initiates an outbound connection to Cloudflare, so the website’s public route does not require forwarding a router port to the server. Requests and responses then use that established connection. This is the connection model described in the <a href="https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/">Cloudflare Tunnel documentation</a>.</p>
+          <p>Immich and the website share the same physical machine, but the website has its own container and service. The public route described here is for the website; it is not the private Tailscale access path used for the photo library.</p>
+        </section>
+        <section id="build">
+          <h2>03 / Build the application, then serve the result</h2>
+          <p>This portfolio is mostly content: project summaries, case studies, and engineering notes. Astro fits that workload because the pages can be generated ahead of time. A visitor does not need a running Node application to assemble each page.</p>
+          <p>The Dockerfile has two stages. The first uses Node 24 on Alpine Linux, installs dependencies with <code>npm ci</code>, and runs <code>npm run build</code>. The second starts from Caddy 2 and copies the generated <code>dist/</code> directory into <code>/srv</code>.</p>
+          <p>That gives the two stages distinct responsibilities. Node and Astro are build tools. Caddy is the runtime web server, serving the generated HTML, CSS, and assets. The final stage does not copy the source tree or the Node build environment.</p>
+          <p>The Caddy configuration sets the document root to <code>/srv</code> and enables gzip and Zstandard compression. Docker Compose declares the website service, its port mapping, and an <code>unless-stopped</code> restart policy. Those few files capture the core deployment configuration in the repository.</p>
+        </section>
+        <section id="deployment">
+          <h2>04 / Automated updates from new commits</h2>
+          <p>New commits pushed to the repository now trigger an automated update flow, carrying changes through the site build and deployment. Git remains the source of truth, while Docker packages the generated website for Caddy to serve.</p>
+          <WebsiteHostingDiagram kind="deployment" />
+          <p>The update must rebuild the image to include the changed pages. The equivalent manual server-side steps are:</p>
+          <pre aria-label="Update the website on the server"><code>git pull
+docker compose up -d --build site</code></pre>
+          <p>The <code>--build</code> flag is essential when the source changes. It runs the build before starting the service from the updated image. Stopping the existing container first is unnecessary for this workflow; I also do not treat a single-container replacement as a zero-downtime deployment.</p>
+          <p>To check a release, I can inspect the local service and its logs, then open the changed page through the public domain:</p>
+          <pre aria-label="Inspect the local website service"><code>curl -I http://localhost:8080/
+docker compose logs --tail=50 site</code></pre>
+          <p>An HTTP response confirms that the service answered. Checking the actual page content separately tells me whether the intended release is being served.</p>
+        </section>
+        <section id="lessons">
+          <h2>05 / The first update exposed the important boundary</h2>
+          <p>After adding the Immich case study, I pushed the changes, pulled them on the server, and ran <code>docker compose down</code> followed by <code>docker compose up -d</code>. The website still showed the old content.</p>
+          <div class="callout"><p class="eyebrow">Lesson / Source code is not the running image</p><h3>Restarting a container does not rebuild the website.</h3><p>The new files were in the server’s repository, but the static HTML was baked into the existing Docker image. Recreating a container from that image served the same old files. The missing step was an image rebuild.</p></div>
+          <p>This made the release process easier to reason about. The repository is an input, the image is a built artifact, and the container runs that artifact. A change at one layer does not automatically update the next.</p>
+          <p>There was also a small portability detail: the repository names its build file <code>dockerfile</code> in lowercase. Compose now names that file explicitly, avoiding reliance on the default <code>Dockerfile</code> spelling when building on Linux.</p>
+        </section>
+        <section id="trade-offs">
+          <h2>06 / What I gain, and what I now own</h2>
+          <p>I have a public website running on existing hardware, with a deployment I can inspect and reproduce from the repository. The project connects the code I write to the infrastructure that serves it.</p>
+          <p>The trade-off is operational responsibility. The website depends on the home server, its power and internet connection, and the tunnel. Sharing a host with Immich also means sharing CPU, memory, and storage resources. Separate containers do not remove that shared dependency.</p>
+          <p>Automated updates reduce the repeated work of publishing changes. Potential improvements include additional build checks, publishing versioned images, a documented rollback procedure, and external availability monitoring.</p>
+          <p>The project has achieved what I wanted from it: a useful website, a second workload for the home server, and a much clearer understanding of what happens between pushing code and serving a page.</p>
+          <a class="text-link" href="/projects">← Explore the other projects</a>
+        </section>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+<style>
+  .hosting-case { padding-block: 50px 80px; border-bottom: 1px solid var(--border); }
+  .case-header > .eyebrow { margin-top: 32px; }
+  h1 { max-width: 1000px; font-size: clamp(2.2rem, 4.6vw, 3.9rem); margin-block: 24px; }
+  h1 span { color: #9ca6af; }
+  .lead { max-width: 770px; font-size: 19px; line-height: 1.8; }
+  .byline { display: flex; flex-wrap: wrap; gap: 12px; font: 11px/1.8 var(--mono); margin-top: 24px; }
+  .facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; border-block: 1px solid var(--border); padding-block: 26px; margin-top: 38px; }
+  dt { color: var(--muted); font: 10px/1.6 var(--mono); margin-bottom: 7px; }
+  dd { font-size: 17px; }
+  .case-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 65px; margin-top: 54px; }
+  .contents { display: flex; flex-direction: column; align-items: start; gap: 8px; position: sticky; top: 25px; }
+  .contents p { margin-bottom: 12px; }
+  .contents a { padding: 5px 0; font-size: 12px; line-height: 1.6; }
+  .contents a:last-child { border: 0; padding: 5px 0; }
+  .case-body { min-width: 0; max-width: 840px; }
+  section { margin-bottom: 52px; scroll-margin-top: 30px; }
+  section:last-child { margin-bottom: 0; }
+  h2 { font-size: 27px; margin-bottom: 22px; }
+  h3 { font-size: 21px; margin-block: 30px 15px; }
+  section > p, .callout > p:not(.eyebrow) { font-size: 16px; line-height: 1.9; margin-block: 18px; }
+  section p a { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+  code { font-family: var(--mono); font-size: .9em; color: #c7dbe2; overflow-wrap: anywhere; }
+  pre { padding: 20px; border: 1px solid var(--border); border-radius: 6px; background: #12191d; white-space: pre-wrap; font-size: 14px; line-height: 1.9; }
+  .callout { margin-block: 28px; padding: 26px; border-left: 2px solid var(--accent); background: var(--surface); border-radius: 0 6px 6px 0; }
+  .callout h3 { margin-top: 16px; }
+  .callout > p:last-child { margin-bottom: 0; }
+  @media (max-width: 950px) { .case-layout { grid-template-columns: 1fr; gap: 35px; } .contents { position: static; flex-direction: row; flex-wrap: wrap; gap: 8px 20px; } .contents p { flex-basis: 100%; } .case-body { max-width: none; } }
+  @media (max-width: 560px) { .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 15px; } dd { font-size: 16px; } .lead { font-size: 17px; } .case-header > .eyebrow { font-size: 9px; } h2 { font-size: 24px; } .callout { padding: 20px; } .hosting-case { padding-top: 30px; } }
+</style>

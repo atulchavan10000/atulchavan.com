@@ -1,0 +1,8 @@
+Method: built-in image generation edit
+
+Edit the supplied LinkedIn architecture graphic. Preserve the top headline, subtitle, browser-to-Cloudflare-to-tunnel-to-home-server diagram, laptop illustration, colors, typography, dimensions, and footer. Change only the lower deployment strip to reflect automated updates from new commits:
+Replace "MANUAL DEPLOYMENT" with "AUTOMATED UPDATES".
+Replace the five connected boxes, left to right, with exactly:
+"New commit" → "Update triggered" → "Build site" → "Deploy" → "Live website".
+Keep the arrows and existing layout aligned and readable.
+Do not add GitHub Actions, Jenkins, webhooks, schedules, test results, uptime or any automation implementation that has not been specified. Make no other changes.

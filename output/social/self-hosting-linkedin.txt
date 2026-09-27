@@ -1,0 +1,45 @@
+🌐 My website now runs on an old laptop at home.
+
+The same ASUS laptop that hosts our family’s Immich photo library is now serving atulchavan.com.
+
+I wanted a place to document my engineering work. Hosting it myself became part of that work: reuse existing hardware, understand the infrastructure, control the deployment, and avoid paying for a separate hosting server.
+
+Here’s the setup:
+
+• Astro generates the static pages.
+• Docker builds and packages the site.
+• Caddy serves the generated HTML, CSS, and assets.
+• Cloudflare Tunnel connects the home server to the public website.
+• Debian runs on the repurposed ASUS laptop.
+
+The visitor path:
+Browser → Cloudflare → Tunnel → Caddy → Website
+
+Cloudflare handles the public HTTPS endpoint. The tunnel connection starts from my side, so this route doesn’t require router port forwarding.
+
+⚙️ New commits now trigger an automated update flow that carries changes through to the website.
+
+One useful lesson came while setting up the deployment process.
+
+I committed the changes, pulled them on the server, stopped the container, and started it again.
+
+The old site was still there.
+
+The source code had changed. The Docker image hadn’t.
+
+Because Astro’s generated pages are baked into the image, restarting the container kept serving the old files. The update needed a rebuild.
+
+That made three separate things much clearer:
+Source code → Built image → Running container
+
+Automation needs to carry the change through those layers, not just restart a service.
+
+There are trade-offs too. Home hosting depends on my power, internet connection, hardware, and maintenance. Sharing a machine with Immich also means sharing resources.
+
+But that’s part of why I wanted to do it. A real website gives me a real reason to understand the system behind it.
+
+💻 https://atulchavan.com
+
+What was the first useful service you hosted yourself?
+
+#SelfHosting #HomeLab #Docker #Cloudflare #Astro #SoftwareEngineering

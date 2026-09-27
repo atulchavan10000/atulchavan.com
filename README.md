@@ -23,6 +23,24 @@ npm run preview
 
 On Windows, if npm is missing from PATH, open a terminal with Node.js installed or run `& 'C:\Program Files\nodejs\npm.cmd' run build` in PowerShell.
 
+## Updating the production server
+
+The production image builds Astro and copies `dist/` into Caddy. Pulling source changes and restarting the existing image does not rebuild that HTML. After pushing changes, run these commands from the repository directory on the server:
+
+```sh
+git pull
+docker compose up -d --build site
+```
+
+There is no need to run `docker compose down` first. The Compose configuration explicitly uses the repository's lowercase `dockerfile` so builds work on Linux.
+
+Check the deployed case study directly:
+
+```sh
+curl -I http://localhost:8080/projects/photos-to-immich/
+docker compose logs --tail=50 site
+```
+
 ## Project structure
 
 - `src/layouts/BaseLayout.astro`: shared page shell, navigation, footer, canonical URL, and social metadata.

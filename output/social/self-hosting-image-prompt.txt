@@ -1,0 +1,20 @@
+Generated using the built-in image-generation tool.
+
+Use case: infographic-diagram / editorial social graphic.
+Create a polished landscape LinkedIn image, 1536x1024, for Atul Chavan's self-hosted website case study. Professional engineering editorial design matching a minimalist dark charcoal website, off-white typography and restrained cyan accents. Large readable text, generous whitespace, crisp aligned diagram lines. Blend a tasteful realistic three-quarter illustration of an older silver laptop serving as a home server with a clear diagram; no people, no invented metrics, no fake brand logos.
+
+Exact headline: "My website runs on a laptop at home."
+Exact subtitle: "atulchavan.com · Astro + Docker + Caddy + Cloudflare Tunnel"
+
+Main diagram label: "VISITOR REQUEST PATH"
+Four clearly distinct nodes in order connected by arrows:
+"Browser" with small text "HTTPS"
+"Cloudflare" with small text "Public endpoint"
+"Cloudflare Tunnel" with small text "Encrypted tunnel"
+"Home server" with small text "Debian · Docker · Caddy"
+Integrate the silver laptop illustration with Home server node, showing a subtle dark code-free webpage on its screen, not a photo gallery. Indicate under the tunnel "Connection initiated from home" so direction of tunnel initiation is distinguished from request arrows.
+
+Smaller bottom strip exact label "MANUAL DEPLOYMENT"
+Flow text: "Edit → Commit & push → Git pull → Docker build → Caddy"
+Footer: "Atul Chavan" and "Build it. Host it. Understand it."
+Use strong typographic hierarchy, minimal cyan glow only along connectors, no loud gradients, no tiny illegible text, no cloud vendor illustrations beyond simple neutral geometric nodes. Do not add AWS, Immich, automatic CI/CD, cost or uptime claims, extra services or extra labels. Accurate spelling. Output the image, not a mockup in a social-media frame.

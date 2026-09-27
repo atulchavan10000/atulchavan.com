@@ -7,5 +7,13 @@ const { kind } = Astro.props;
   {kind === 'framework' ? <div class="code-preview"><div><span class="code-muted">interface</span> <span class="code-accent">ReliableSystem</span> {'{'}</div><div>&nbsp;&nbsp;design<span class="code-muted">();</span></div><div>&nbsp;&nbsp;automate<span class="code-muted">();</span></div><div>&nbsp;&nbsp;improve<span class="code-muted">();</span></div><div>{'}'}</div></div>
     : kind === 'pipeline' ? <div class="pipeline-graphic"><div class="pipeline-start">BUILD</div><div class="pipeline-branches"><span>SHARD 01 <b>✓</b></span><span>SHARD 02 <b>✓</b></span><span>SHARD 03 <b>✓</b></span></div><div class="pipeline-end">↗</div></div>
     : kind === 'triage' ? <div class="triage-graphic"><span>FAILURES</span><i>→</i><span>CONTEXT</span><i>→</i><strong>INSIGHT</strong></div>
+    : kind === 'hosting' ? <div class="hosting-graphic"><span>atulchavan.com</span><div>HTTPS <b>→</b> TUNNEL <b>→</b> CADDY</div><small>BUILT WITH ASTRO · SERVED FROM HOME</small></div>
     : <div class="server-graphic"><div class="server-unit"><i></i><i></i><span>{kind === 'nas' ? 'HOME NAS' : 'PRIVATE CLOUD'}</span><b>●</b></div><div class="server-unit"><i></i><i></i><span>{kind === 'nas' ? 'FAMILY STORAGE' : 'PHOTO ARCHIVE'}</span><b>●</b></div><div class="server-base">{kind === 'nas' ? 'RASPBERRY PI / SAMBA' : 'DEBIAN / DOCKER / IMMICH'}</div></div>}
 </div>
+<style>
+  .hosting-graphic { text-align: center; font-family: var(--mono); }
+  .hosting-graphic > span { display: block; color: #c6e1e8; font-size: 16px; margin-bottom: 18px; }
+  .hosting-graphic > div { border: 1px solid #3b4d58; border-radius: 4px; padding: 10px 14px; color: #b0c1ca; font-size: 10px; }
+  .hosting-graphic b { color: var(--accent); margin-inline: 8px; font-weight: normal; }
+  .hosting-graphic small { display: block; color: #9baeb8; margin-top: 15px; font-size: 8px; }
+</style>

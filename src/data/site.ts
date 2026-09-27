@@ -8,7 +8,7 @@ export const contacts: { label: string; detail: string; href: string | null }[] 
 export interface Project {
   href?: string;
   slug: string; number: string; title: string; category: string; description: string; tags: string[];
-  visual: 'framework' | 'pipeline' | 'server' | 'nas' | 'triage';
+  visual: 'framework' | 'pipeline' | 'server' | 'nas' | 'triage' | 'hosting';
 }
 export const projects: Project[] = [
   { slug: 'ai-test-framework', number: '01', title: 'AI Test Framework', category: 'Automation architecture',
@@ -27,6 +27,10 @@ export const projects: Project[] = [
   { slug: 'ai-jenkins-triage', number: '05', title: 'AI Jenkins Triage Agent', category: 'AI-assisted engineering',
     description: 'Built an AI-assisted failure triage workflow that groups Jenkins failures, searches contextual documentation, and helps identify root causes faster.',
     tags: ['AI', 'Jenkins', 'Automation', 'Developer Tools'], visual: 'triage' },
+  { slug: 'self-hosting-this-website', number: '06', title: 'Hosting My Own Website', category: 'Self-hosted infrastructure',
+    href: '/projects/self-hosting-this-website',
+    description: 'Serving atulchavan.com from a repurposed ASUS laptop with Astro, Docker, Caddy, and Cloudflare Tunnel. A practical look at the architecture, deployment workflow, and trade-offs.',
+    tags: ['Astro', 'Docker', 'Caddy', 'Cloudflare Tunnel', 'Debian'], visual: 'hosting' },
 ];
 export const journal = [
   { category: 'Self hosting', title: 'Diagnosing I/O Bottlenecks During an Immich Migration', description: 'What simultaneous imports and storage wait taught me about diagnosing a busy server.' },
