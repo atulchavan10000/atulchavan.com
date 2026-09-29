@@ -8,13 +8,51 @@ const articles = await getFrameworkSeries();
   <div class="container page-content">
     <header class="page-heading"><p class="eyebrow">Engineering journal / Notes from the workbench</p><h1>The work.<br /><span>And the thinking behind it.</span></h1><p>Long-form engineering notes, architecture writeups, trade-offs, and lessons learned from real projects.</p></header>
     <section id="framework-series" aria-labelledby="series-heading">
-      <div class="journal-notice"><span class="status-dot" aria-hidden="true"></span><p>Seven engineering notes from the framework I'm building. Read in order, or start with the design problem you care about.</p></div>
+      <div class="journal-notice"><span class="status-dot" aria-hidden="true"></span><p>Engineering notes from the framework I'm building. Read in order, or start with the design problem you care about.</p></div>
       <h2 id="series-heading">{seriesTitle}</h2>
       <div class="journal-entries">{articles.map(entry => <article class="journal-entry"><span class="focus-index">{String(entry.data.part).padStart(2, '0')}</span><div><p class="eyebrow">{entry.data.category}</p><h3><a href={`/journal/${entry.id}`}>{entry.data.title} <span aria-hidden="true">↗</span></a></h3><p>{entry.data.description}</p></div><span class="planned-label">Part {entry.data.part}</span></article>)}</div>
     </section>
-    <h2 class="upcoming">On the workbench</h2>
-    <p>Topics for future essays.</p>
-    <div class="journal-entries">{journal.map((entry, index) => <article class="journal-entry"><span class="focus-index">0{index + 1}</span><div><p class="eyebrow">{entry.category}</p><h2>{entry.title}</h2><p>{entry.description}</p></div><span class="planned-label">Planned essay</span></article>)}</div>
+    <h2 class="upcoming">All Engineering Notes</h2>
+<p>Browse every published engineering note.</p>
+
+<div class="journal-entries">
+  {articles.map((entry, index) => (
+    <article class="journal-entry">
+      <span class="focus-index">
+        {String(index + 1).padStart(2, '0')}
+      </span>
+
+      <div>
+        <p class="eyebrow">{entry.data.category}</p>
+
+        <h3>
+          <a href={`/journal/${entry.id}`}>
+            {entry.data.title}
+            <span aria-hidden="true"> ↗</span>
+          </a>
+        </h3>
+
+        <p>{entry.data.description}</p>
+
+        <small class="article-date">
+          {new Date(`${entry.data.date}T00:00:00Z`).toLocaleDateString(
+            "en-GB",
+            {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+              timeZone: "UTC",
+            }
+          )}
+        </small>
+      </div>
+
+      <span class="planned-label">
+        Published
+      </span>
+    </article>
+  ))}
+</div>
   </div>
 </BaseLayout>
 <style>
