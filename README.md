@@ -53,13 +53,13 @@ docker compose logs --tail=50 site
 
 ## Editing content
 
-Edit project summaries, tags, and planned essays in `src/data/site.ts`. The first three projects and essays appear on the homepage. A project's optional `href` links its card to a full case study; other homepage cards link to the corresponding overview on `/projects`.
+Edit project summaries, tags, and planned essays in `src/data/site.ts`. The first three projects appear on the homepage. A project's optional `href` links its card to a full case study; other homepage cards link to the corresponding overview on `/projects`.
 
 The Immich case study lives in `src/pages/projects/photos-to-immich.astro`, with three responsive diagrams in `src/components/ImmichDiagram.astro`. It covers the family photo cloud, migration, the 60% battery charge limit, and off-site recovery. Its Glacier section is written under the owner's requested assumption that Glacier is already in place; this edit did not deploy or verify a Glacier backup. Recovery testing is not claimed as completed.
 
 Contact values intentionally start as `null`. Replace them with verified GitHub and LinkedIn URLs, `mailto:your-address`, and a resume URL (for example `/resume.pdf`, after adding that file under `public/`). The contact page automatically renders configured values as links. Unconfigured entries remain clearly labeled placeholders.
 
-Journal topics are planned essays, not published articles. When the first writeups are ready, add Markdown files using Astro content collections and generate individual article routes. Avoid presenting unfinished drafts as published work.
+The seven-part framework journal series lives in `src/content/journal/`. Each Markdown file includes a title, description, category, date, part number, diagram steps and caption, and implementation source filenames. `src/content.config.ts` validates these fields; `src/pages/journal/[slug].astro` generates the article pages, section links, and previous/next navigation. The journal index lists all parts in order, and the homepage previews the first three. Remaining planned topics stay under “On the workbench.”
 
 ## Design
 
@@ -69,6 +69,6 @@ Charcoal surfaces, off-white text, a restrained cyan accent, spacious typography
 
 1. Add verified contact URLs and a resume.
 2. Add project repository links and detailed case studies with evidence and architecture decisions.
-3. Publish the first Markdown journal articles through content collections.
+3. Extend the journal with further implementation notes as the projects evolve.
 4. Add a social sharing image, sitemap, and RSS feed when publishing content.
 5. Choose a host and deploy the generated `dist/` directory.

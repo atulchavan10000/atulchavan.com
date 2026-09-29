@@ -1,9 +1,10 @@
 ---
 import SectionTitle from './SectionTitle.astro';
-import { journal } from '../data/site';
+import { getFrameworkSeries } from '../data/journal';
+const articles = await getFrameworkSeries();
 ---
 <section class="container section journal-section" aria-label="Engineering journal preview">
   <SectionTitle number="04" label="Engineering journal" title="Notes from the workbench." href="/journal" linkText="Visit the journal" />
-  <p class="section-description">Architecture, trade-offs, and lessons from building real things.</p>
-  <div class="journal-list">{journal.slice(0, 3).map(entry => <article class="journal-row"><span class="journal-category">{entry.category}</span><h3>{entry.title}</h3><span class="planned-label">Planned essay</span></article>)}</div>
+  <p class="section-description">From the seven-part series on building a Java API automation framework.</p>
+  <div class="journal-list">{articles.slice(0, 3).map(entry => <article class="journal-row"><span class="journal-category">{entry.data.category}</span><h3><a href={`/journal/${entry.id}`}>{entry.data.title} <span aria-hidden="true">↗</span></a></h3><span class="planned-label">Part {entry.data.part}</span></article>)}</div>
 </section>

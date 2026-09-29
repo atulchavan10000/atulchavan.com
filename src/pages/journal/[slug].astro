@@ -1,0 +1,91 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import JournalDiagram from '../../components/JournalDiagram.astro';
+import { getFrameworkSeries, seriesTitle } from '../../data/journal';
+
+export async function getStaticPaths() {
+  return (await getFrameworkSeries()).map(entry => ({ params: { slug: entry.id }, props: { entry } }));
+}
+interface Props { entry: CollectionEntry<'journal'>; }
+const { entry } = Astro.props;
+const series = await getFrameworkSeries();
+const index = series.findIndex(item => item.id === entry.id);
+const previous = series[index - 1];
+const next = series[index + 1];
+const { Content, headings } = await render(entry);
+const readingMinutes = Math.max(1, Math.ceil((entry.body ?? '').split(/\s+/).length / 200));
+---
+<BaseLayout title={`${entry.data.title} — Atul Chavan`} description={entry.data.description}>
+  <article class="container journal-article">
+    <header class="article-header">
+      <a class="text-link" href="/journal">← Engineering journal</a>
+      <p class="eyebrow">{entry.data.category} / Part {entry.data.part} of {series.length}</p>
+      <h1>{entry.data.title}</h1>
+      <p class="article-description">{entry.data.description}</p>
+      <p class="article-meta">Atul Chavan · <time datetime={entry.data.date}>{new Date(`${entry.data.date}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}</time> · {readingMinutes} min read</p>
+      <a class="series-title" href="/journal#framework-series">{seriesTitle}</a>
+    </header>
+    <div class="article-layout">
+      <aside class="article-outline" aria-label="Article sections">
+        <p class="eyebrow">On this page</p>
+        <ul>{headings.filter(heading => heading.depth === 2).map(heading => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ul>
+        <a class="text-link" href="/projects/api-automation-framework">Framework project ↗</a>
+      </aside>
+      <div class="article-main">
+        <JournalDiagram {...entry.data.diagram} />
+        <div class="article-prose"><Content /></div>
+        <section class="source-notes" aria-label="Implementation references">
+          <h2>Implementation references</h2>
+          <p>Based on the framework working tree reviewed on 29 September 2026. Examples are excerpts or explicitly identified illustrations; they are not a standalone project.</p>
+          <ul>{entry.data.sources.map(source => <li><code>{source}</code></li>)}</ul>
+        </section>
+        <div class="article-pagination" aria-label="Continue the series">
+          {previous ? <a href={`/journal/${previous.id}`} rel="prev"><span>← Previous · Part {previous.data.part}</span>{previous.data.title}</a> : <a href="/journal#framework-series"><span>Series index</span>Explore all seven articles</a>}
+          {next ? <a href={`/journal/${next.id}`} rel="next"><span>Next · Part {next.data.part} →</span>{next.data.title}</a> : <a href="/projects/api-automation-framework"><span>Behind the series</span>Explore the framework project →</a>}
+        </div>
+      </div>
+    </div>
+    <details class="series-directory"><summary>All {series.length} parts in this series</summary><ol>{series.map(item => <li><a href={`/journal/${item.id}`} aria-current={item.id === entry.id ? 'page' : undefined}>{item.data.title}</a></li>)}</ol></details>
+  </article>
+</BaseLayout>
+<style>
+  .journal-article { padding-block: 45px 80px; }
+  .article-header { border-bottom: 1px solid var(--border); padding-bottom: 35px; }
+  .article-header .eyebrow { margin-top: 28px; }
+  h1 { max-width: 1000px; margin-block: 22px; font-size: clamp(2.1rem, 4.5vw, 3.65rem); }
+  .article-description { max-width: 780px; font-size: 18px; line-height: 1.85; }
+  .article-meta { font: 11px/1.9 var(--mono); margin-top: 22px; }
+  .series-title { display: inline-block; margin-top: 17px; font-size: 13px; color: var(--accent); }
+  .article-layout { display: grid; grid-template-columns: 205px minmax(0, 1fr); gap: 55px; }
+  .article-outline { align-self: start; position: sticky; top: 24px; padding-top: 35px; }
+  .article-outline ul { list-style: none; padding: 0; margin-block: 18px; }
+  .article-outline li { margin-block: 12px; font-size: 12px; line-height: 1.6; color: var(--muted); }
+  .article-main { min-width: 0; }
+  .article-prose { font-size: 16px; line-height: 1.9; }
+  .article-prose :global(h2) { font-size: 27px; line-height: 1.35; margin-block: 42px 20px; scroll-margin-top: 25px; }
+  .article-prose :global(h3) { font-size: 21px; margin-block: 28px 15px; }
+  .article-prose :global(p) { margin-block: 18px; }
+  .article-prose :global(ul), .article-prose :global(ol) { padding-left: 24px; margin-block: 20px; color: var(--muted); }
+  .article-prose :global(li) { margin-block: 9px; }
+  .article-prose :global(strong) { color: var(--text); font-weight: 600; }
+  .article-prose :global(a) { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+  .article-prose :global(pre) { overflow-x: auto; max-width: 100%; padding: 22px; border: 1px solid var(--border); border-radius: 6px; margin-block: 24px; font: 12px/1.85 var(--mono); }
+  .article-prose :global(:not(pre) > code) { font: .86em var(--mono); color: #bbd9e2; overflow-wrap: anywhere; }
+  .article-prose :global(blockquote) { border-left: 2px solid var(--accent); padding-left: 22px; margin-block: 25px; }
+  .source-notes { border-top: 1px solid var(--border); margin-top: 40px; padding-top: 25px; }
+  .source-notes h2 { font-size: 19px; }
+  .source-notes p { font-size: 12px; margin-block: 14px; }
+  .source-notes ul { padding-left: 19px; color: var(--muted); font-size: 11px; line-height: 1.9; overflow-wrap: anywhere; }
+  .article-pagination { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 35px; }
+  .article-pagination a { padding: 20px; border: 1px solid var(--border); border-radius: 5px; font-size: 15px; }
+  .article-pagination span { display: block; font: 10px/1.7 var(--mono); color: var(--accent); margin-bottom: 10px; }
+  .series-directory { margin-top: 40px; border-block: 1px solid var(--border); padding-block: 22px; }
+  summary { cursor: pointer; font-size: 15px; }
+  summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+  .series-directory ol { padding-left: 25px; margin-top: 20px; }
+  .series-directory li { padding-block: 7px; font-size: 14px; color: var(--muted); }
+  .series-directory [aria-current] { color: var(--accent); }
+  @media (max-width: 900px) { .article-layout { grid-template-columns: 1fr; gap: 0; } .article-outline { position: static; } .article-outline ul { display: flex; flex-wrap: wrap; gap: 10px 20px; } .article-outline li { margin: 0; } }
+  @media (max-width: 560px) { .article-description { font-size: 16px; } .article-pagination { grid-template-columns: 1fr; } .article-prose :global(h2) { font-size: 24px; } .article-prose :global(pre) { padding: 15px; } }
+</style>

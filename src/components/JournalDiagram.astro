@@ -1,0 +1,24 @@
+---
+interface Props {
+  title: string;
+  steps: { title: string; detail: string }[];
+  caption: string;
+}
+const { title, steps, caption } = Astro.props;
+---
+<figure class="journal-diagram">
+  <p class="diagram-title">{title}</p>
+  <ol>{steps.map(step => <li><strong>{step.title}</strong><span>{step.detail}</span></li>)}</ol>
+  <figcaption>{caption}</figcaption>
+</figure>
+<style>
+  .journal-diagram { margin-block: 35px; padding: 26px; border: 1px solid #344750; border-radius: 7px; background: #131c21; }
+  .diagram-title { font: 11px/1.7 var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin-bottom: 20px; }
+  ol { list-style: none; padding: 0; display: grid; gap: 24px; }
+  li { position: relative; border: 1px solid #415560; border-radius: 4px; padding: 13px 18px; text-align: center; background: #172228; }
+  li + li::before { content: '↓'; position: absolute; left: calc(50% - 5px); top: -26px; color: var(--accent); }
+  strong { display: block; font-size: 15px; font-weight: 550; }
+  span { display: block; color: #adbcc5; font-size: 13px; margin-top: 3px; }
+  figcaption { color: var(--muted); font-size: 12px; line-height: 1.8; margin-top: 20px; }
+  @media (max-width: 560px) { .journal-diagram { padding: 18px 14px; } li { padding: 12px; } }
+</style>

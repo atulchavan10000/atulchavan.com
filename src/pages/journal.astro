@@ -1,11 +1,26 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { journal } from '../data/site';
+import { getFrameworkSeries, seriesTitle } from '../data/journal';
+const articles = await getFrameworkSeries();
 ---
-<BaseLayout title="Engineering Journal — Atul Chavan" description="Planned long-form engineering notes on automation architecture, AI in testing, system design, and self-hosting.">
+<BaseLayout title="Engineering Journal — Atul Chavan" description="A seven-part series on Java API automation framework design: configuration, clients, interceptors, immutable requests, negative testing, test isolation, and logging.">
   <div class="container page-content">
     <header class="page-heading"><p class="eyebrow">Engineering journal / Notes from the workbench</p><h1>The work.<br /><span>And the thinking behind it.</span></h1><p>Long-form engineering notes, architecture writeups, trade-offs, and lessons learned from real projects.</p></header>
-    <div class="journal-notice"><span class="status-dot" aria-hidden="true"></span><p>The first essays are on the workbench. These are planned topics; no articles have been published yet.</p></div>
+    <section id="framework-series" aria-labelledby="series-heading">
+      <div class="journal-notice"><span class="status-dot" aria-hidden="true"></span><p>Seven engineering notes from the framework I'm building. Read in order, or start with the design problem you care about.</p></div>
+      <h2 id="series-heading">{seriesTitle}</h2>
+      <div class="journal-entries">{articles.map(entry => <article class="journal-entry"><span class="focus-index">{String(entry.data.part).padStart(2, '0')}</span><div><p class="eyebrow">{entry.data.category}</p><h3><a href={`/journal/${entry.id}`}>{entry.data.title} <span aria-hidden="true">↗</span></a></h3><p>{entry.data.description}</p></div><span class="planned-label">Part {entry.data.part}</span></article>)}</div>
+    </section>
+    <h2 class="upcoming">On the workbench</h2>
+    <p>Topics for future essays.</p>
     <div class="journal-entries">{journal.map((entry, index) => <article class="journal-entry"><span class="focus-index">0{index + 1}</span><div><p class="eyebrow">{entry.category}</p><h2>{entry.title}</h2><p>{entry.description}</p></div><span class="planned-label">Planned essay</span></article>)}</div>
   </div>
 </BaseLayout>
+<style>
+  #series-heading { font-size: clamp(1.6rem, 3vw, 2.1rem); max-width: 780px; margin-block: 30px; }
+  .journal-entry h3 { font-size: 23px; margin-block: 12px; }
+  .journal-entry h3 span { color: var(--accent); }
+  .upcoming { margin-block: 60px 14px; font-size: 26px; }
+  @media (max-width: 560px) { .journal-entry h3 { font-size: 21px; } }
+</style>

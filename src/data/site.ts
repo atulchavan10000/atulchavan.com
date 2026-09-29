@@ -35,7 +35,6 @@ export const projects: Project[] = [
 ];
 export const journal = [
   { category: 'Self hosting', title: 'Diagnosing I/O Bottlenecks During an Immich Migration', description: 'What simultaneous imports and storage wait taught me about diagnosing a busy server.' },
-  { category: 'Architecture', title: 'Building a Java API Automation Framework', description: 'Thinking through client abstractions, test data, and a framework that can grow.' },
   { category: 'CI/CD', title: 'Reducing Regression Time with Jenkins Fan-out', description: 'Notes on parallel execution, test sharding, and making feedback loops shorter.' },
   { category: 'AI in testing', title: 'AI in Testing: Practical Use Cases', description: 'Exploring where AI can support testing and where engineering judgment still matters.' },
   { category: 'Home lab', title: 'Building a Raspberry Pi NAS', description: 'Storage, Samba shares, and learning by building a family photo backup system.' },
