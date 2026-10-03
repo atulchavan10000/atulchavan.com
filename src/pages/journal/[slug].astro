@@ -2,14 +2,15 @@
 import { render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import JournalDiagram from '../../components/JournalDiagram.astro';
-import { getFrameworkSeries, seriesTitle } from '../../data/journal';
+import { frameworkSeriesId, getFrameworkSeries, getJournalEntries, seriesTitle } from '../../data/journal';
 
 export async function getStaticPaths() {
-  return (await getFrameworkSeries()).map(entry => ({ params: { slug: entry.id }, props: { entry } }));
+  return (await getJournalEntries()).map(entry => ({ params: { slug: entry.id }, props: { entry } }));
 }
 interface Props { entry: CollectionEntry<'journal'>; }
 const { entry } = Astro.props;
-const series = await getFrameworkSeries();
+const isFrameworkEntry = entry.data.series === frameworkSeriesId;
+const series = isFrameworkEntry ? await getFrameworkSeries() : [];
 const index = series.findIndex(item => item.id === entry.id);
 const previous = series[index - 1];
 const next = series[index + 1];
@@ -20,17 +21,17 @@ const readingMinutes = Math.max(1, Math.ceil((entry.body ?? '').split(/\s+/).len
   <article class="container journal-article">
     <header class="article-header">
       <a class="text-link" href="/journal">← Engineering journal</a>
-      <p class="eyebrow">{entry.data.category} / Part {entry.data.part} of {series.length}</p>
+      <p class="eyebrow">{entry.data.category}{isFrameworkEntry && ` / Part ${entry.data.part} of ${series.length}`}</p>
       <h1>{entry.data.title}</h1>
       <p class="article-description">{entry.data.description}</p>
       <p class="article-meta">Atul Chavan · <time datetime={entry.data.date}>{new Date(`${entry.data.date}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })}</time> · {readingMinutes} min read</p>
-      <a class="series-title" href="/journal#framework-series">{seriesTitle}</a>
+      {isFrameworkEntry && <a class="series-title" href="/journal#framework-series">{seriesTitle}</a>}
     </header>
     <div class="article-layout">
       <aside class="article-outline" aria-label="Article sections">
         <p class="eyebrow">On this page</p>
         <ul>{headings.filter(heading => heading.depth === 2).map(heading => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ul>
-        <a class="text-link" href="/projects/api-automation-framework">Framework project ↗</a>
+        {isFrameworkEntry && <a class="text-link" href="/projects/api-automation-framework">Framework project ↗</a>}
       </aside>
       <div class="article-main">
         <JournalDiagram {...entry.data.diagram} />
@@ -40,13 +41,13 @@ const readingMinutes = Math.max(1, Math.ceil((entry.body ?? '').split(/\s+/).len
           <p>Based on the framework working tree reviewed on 29 September 2026. Examples are excerpts or explicitly identified illustrations; they are not a standalone project.</p>
           <ul>{entry.data.sources.map(source => <li><code>{source}</code></li>)}</ul>
         </section>
-        <div class="article-pagination" aria-label="Continue the series">
-          {previous ? <a href={`/journal/${previous.id}`} rel="prev"><span>← Previous · Part {previous.data.part}</span>{previous.data.title}</a> : <a href="/journal#framework-series"><span>Series index</span>Explore all seven articles</a>}
+        {isFrameworkEntry && <div class="article-pagination" aria-label="Continue the series">
+          {previous ? <a href={`/journal/${previous.id}`} rel="prev"><span>← Previous · Part {previous.data.part}</span>{previous.data.title}</a> : <a href="/journal#framework-series"><span>Series index</span>Explore all {series.length} articles</a>}
           {next ? <a href={`/journal/${next.id}`} rel="next"><span>Next · Part {next.data.part} →</span>{next.data.title}</a> : <a href="/projects/api-automation-framework"><span>Behind the series</span>Explore the framework project →</a>}
-        </div>
+        </div>}
       </div>
     </div>
-    <details class="series-directory"><summary>All {series.length} parts in this series</summary><ol>{series.map(item => <li><a href={`/journal/${item.id}`} aria-current={item.id === entry.id ? 'page' : undefined}>{item.data.title}</a></li>)}</ol></details>
+    {isFrameworkEntry && <details class="series-directory"><summary>All {series.length} parts in this series</summary><ol>{series.map(item => <li><a href={`/journal/${item.id}`} aria-current={item.id === entry.id ? 'page' : undefined}>{item.data.title}</a></li>)}</ol></details>}
   </article>
 </BaseLayout>
 <style>

@@ -5,6 +5,6 @@ const articles = await getFrameworkSeries();
 ---
 <section class="container section journal-section" aria-label="Engineering journal preview">
   <SectionTitle number="04" label="Engineering journal" title="Notes from the workbench." href="/journal" linkText="Visit the journal" />
-  <p class="section-description">From the seven-part series on building a Java API automation framework.</p>
+  <p class="section-description">From the ongoing series on building a Java API automation framework.</p>
   <div class="journal-list">{articles.slice(0, 3).map(entry => <article class="journal-row"><span class="journal-category">{entry.data.category}</span><h3><a href={`/journal/${entry.id}`}>{entry.data.title} <span aria-hidden="true">↗</span></a></h3><span class="planned-label">Part {entry.data.part}</span></article>)}</div>
 </section>

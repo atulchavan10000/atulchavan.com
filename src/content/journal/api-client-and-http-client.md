@@ -3,6 +3,7 @@ title: "Why My Framework Has Both an ApiClient and an HttpClient"
 description: "Separating application operations, shared request preparation, and REST Assured transport without introducing an interface for everything."
 category: "API architecture"
 date: "2026-09-29"
+series: "framework-design"
 part: 2
 diagram:
   title: "One request, distinct responsibilities"

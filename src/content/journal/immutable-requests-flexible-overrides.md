@@ -3,6 +3,7 @@ title: "Immutable Requests, Flexible Overrides: Designing with Builders"
 description: "Using defensive copies and explicit defaults to make request construction predictable without preventing unusual test inputs."
 category: "Object design"
 date: "2026-09-29"
+series: "framework-design"
 part: 4
 diagram:
   title: "Ownership during request preparation"

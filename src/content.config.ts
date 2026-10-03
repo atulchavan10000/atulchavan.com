@@ -9,7 +9,8 @@ const journal = defineCollection({
     description: z.string(),
     category: z.string(),
     date: z.string(),
-    part: z.number().int().positive(),
+    series: z.string().optional(),
+    part: z.number().int().positive().optional(),
     diagram: z.object({
       title: z.string(),
       steps: z.array(z.object({ title: z.string(), detail: z.string() })),

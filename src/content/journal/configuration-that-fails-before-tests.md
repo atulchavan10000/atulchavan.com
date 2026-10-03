@@ -3,6 +3,7 @@ title: "Configuration That Fails Before Your Tests Do"
 description: "How I separate configuration loading from test execution, resolve overrides, and turn a YAML catalog into a typed snapshot."
 category: "Configuration"
 date: "2026-09-29"
+series: "framework-design"
 part: 1
 diagram:
   title: "From external settings to a stable suite configuration"

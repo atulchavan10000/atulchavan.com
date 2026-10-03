@@ -59,7 +59,7 @@ The Immich case study lives in `src/pages/projects/photos-to-immich.astro`, with
 
 Contact values intentionally start as `null`. Replace them with verified GitHub and LinkedIn URLs, `mailto:your-address`, and a resume URL (for example `/resume.pdf`, after adding that file under `public/`). The contact page automatically renders configured values as links. Unconfigured entries remain clearly labeled placeholders.
 
-The seven-part framework journal series lives in `src/content/journal/`. Each Markdown file includes a title, description, category, date, part number, diagram steps and caption, and implementation source filenames. `src/content.config.ts` validates these fields; `src/pages/journal/[slug].astro` generates the article pages, section links, and previous/next navigation. The journal index lists all parts in order, and the homepage previews the first three. Remaining planned topics stay under “On the workbench.”
+The framework journal series lives in `src/content/journal/`. Series entries use `series: "framework-design"` and a part number; standalone notes omit both fields. `src/content.config.ts` validates the metadata, and `src/data/journal.ts` keeps series entries separate from standalone notes so the journal index never renders a post twice. The homepage previews the first three framework articles.
 
 ## Design
 

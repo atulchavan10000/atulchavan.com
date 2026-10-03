@@ -3,6 +3,7 @@ title: "Parallel Tests Need State Ownership, Not Just Thread Safety"
 description: "Separating suite configuration, per-invocation correlation, and thread-local logging so parallel execution does not share the wrong state."
 category: "Test isolation"
 date: "2026-09-29"
+series: "framework-design"
 part: 6
 diagram:
   title: "Lifetimes in the current framework"

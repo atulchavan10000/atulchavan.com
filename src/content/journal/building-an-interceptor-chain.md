@@ -3,6 +3,7 @@ title: "Building an Interceptor Chain Without a God Object"
 description: "How common headers, correlation, and logging wrap HTTP execution—and why ordering, continuations, and exception behavior belong in the design."
 category: "Design patterns"
 date: "2026-09-29"
+series: "framework-design"
 part: 3
 diagram:
   title: "Current outgoing execution order"

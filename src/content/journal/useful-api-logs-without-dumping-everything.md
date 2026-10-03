@@ -3,6 +3,7 @@ title: "Useful API Logs Without Dumping Everything"
 description: "Designing request and response logs around correlation, bounded body formatting, redaction, and the limits of what a formatter can protect."
 category: "Observability"
 date: "2026-09-29"
+series: "framework-design"
 part: 7
 diagram:
   title: "A diagnostic view, separate from HTTP evidence"

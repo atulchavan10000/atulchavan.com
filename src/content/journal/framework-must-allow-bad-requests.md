@@ -3,6 +3,7 @@ title: "A Test Framework Must Let You Send Bad Requests"
 description: "Why typed DTOs need a deliberate raw-body escape hatch, and why response mapping must never discard the evidence from a negative test."
 category: "Negative testing"
 date: "2026-09-29"
+series: "framework-design"
 part: 5
 diagram:
   title: "Two body paths, one execution pipeline"
