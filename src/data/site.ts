@@ -1,8 +1,8 @@
-// Replace null with verified profile URLs, a mailto: URL, or a public resume path.
+// Add a public resume path when the resume is ready.
 export const contacts: { label: string; detail: string; href: string | null }[] = [
-  { label: 'GitHub', detail: 'Code, experiments, and engineering tools', href: null },
-  { label: 'LinkedIn', detail: 'Professional background and connections', href: null },
-  { label: 'Email', detail: 'Start a conversation', href: null },
+  { label: 'GitHub', detail: 'Code, experiments, and engineering tools', href: 'https://github.com/atulchavan10000' },
+  { label: 'LinkedIn', detail: 'Professional background and connections', href: 'https://www.linkedin.com/in/atul-chavan-4735697a/' },
+  { label: 'Email', detail: 'atulchavan528@gmail.com', href: 'mailto:atulchavan528@gmail.com' },
   { label: 'Resume', detail: 'Experience and engineering background', href: null },
 ];
 export interface Project {
